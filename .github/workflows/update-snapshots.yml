@@ -1,0 +1,49 @@
+name: Update Visual Snapshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to update snapshots on'
+        required: false
+        default: 'main'
+
+jobs:
+  update-snapshots:
+    name: Regenerate visual baselines (Linux/chromium)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Regenerate snapshots
+        run: npx playwright test --project=visual --update-snapshots
+        env:
+          TEST_ENV: ${{ vars.TEST_ENV || 'dev' }}
+
+      - name: Commit updated snapshots
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tests/visual/
+          if git diff --cached --quiet; then
+            echo "No snapshot changes — baselines are up to date."
+          else
+            git commit -m "chore: update visual regression baselines (Linux/chromium) [skip ci]"
+            git push
+          fi

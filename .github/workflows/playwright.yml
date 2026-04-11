@@ -114,6 +114,9 @@ jobs:
           retention-days: 14
 
   # ── Visual regression ─────────────────────────────────────────────────────────
+  # Snapshots are platform-specific. Linux baselines are generated via the
+  # "Update Visual Snapshots" workflow (Actions → Run workflow).
+  # Until Linux baselines exist, this job will fail with "snapshot missing".
   visual:
     name: Visual Regression Tests
     runs-on: ubuntu-latest
