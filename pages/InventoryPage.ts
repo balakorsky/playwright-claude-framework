@@ -7,6 +7,9 @@ export class InventoryPage {
   readonly cartBadge: Locator;
   readonly cartLink: Locator;
   readonly sortDropdown: Locator;
+  readonly burgerMenuButton: Locator;
+  readonly logoutLink: Locator;
+  readonly resetAppStateLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -15,6 +18,9 @@ export class InventoryPage {
     this.cartBadge = page.locator('.shopping_cart_badge');
     this.cartLink = page.locator('.shopping_cart_link');
     this.sortDropdown = page.locator('[data-test="product-sort-container"]');
+    this.burgerMenuButton = page.locator('#react-burger-menu-btn');
+    this.logoutLink = page.locator('#logout_sidebar_link');
+    this.resetAppStateLink = page.locator('#reset_sidebar_link');
   }
 
   async expectPageLoaded() {
@@ -58,5 +64,19 @@ export class InventoryPage {
   async goToCart() {
     await this.cartLink.click();
     await expect(this.page).toHaveURL(/cart/);
+  }
+
+  async logout() {
+    await this.burgerMenuButton.click();
+    await this.logoutLink.waitFor({ state: 'visible' });
+    await this.logoutLink.click();
+    await expect(this.page).toHaveURL('https://www.saucedemo.com/');
+  }
+
+  async resetAppState() {
+    await this.burgerMenuButton.click();
+    await this.resetAppStateLink.waitFor({ state: 'visible' });
+    await this.resetAppStateLink.click();
+    await this.burgerMenuButton.click();
   }
 }
