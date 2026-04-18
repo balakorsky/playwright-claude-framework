@@ -15,6 +15,9 @@ export class CheckoutPage {
   readonly finishButton: Locator;
   // Confirmation
   readonly confirmationHeader: Locator;
+  // Validation
+  readonly errorMessage: Locator;
+  readonly cancelButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -28,6 +31,29 @@ export class CheckoutPage {
     this.total = page.locator('.summary_total_label');
     this.finishButton = page.locator('[data-test="finish"]');
     this.confirmationHeader = page.locator('[data-test="complete-header"]');
+    this.errorMessage = page.locator('[data-test="error"]');
+    this.cancelButton = page.locator('[data-test="cancel"]');
+  }
+
+  async submitShippingInfo(firstName: string, lastName: string, postalCode: string) {
+    if (firstName) await this.firstNameInput.fill(firstName);
+    if (lastName)  await this.lastNameInput.fill(lastName);
+    if (postalCode) await this.postalCodeInput.fill(postalCode);
+    await this.continueButton.click();
+  }
+
+  async expectError(text: string) {
+    await expect(this.errorMessage).toBeVisible();
+    await expect(this.errorMessage).toContainText(text);
+  }
+
+  async expectStaysOnStepOne() {
+    await expect(this.page).toHaveURL(/checkout-step-one/);
+  }
+
+  async cancel() {
+    await this.cancelButton.click();
+    await expect(this.page).toHaveURL(/cart/);
   }
 
   async fillShippingInfo(firstName: string, lastName: string, postalCode: string) {
