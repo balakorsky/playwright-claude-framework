@@ -29,4 +29,15 @@ export class CartPage {
     await this.checkoutButton.click();
     await expect(this.page).toHaveURL(/checkout-step-one/);
   }
+
+  async getItemPrices(): Promise<number[]> {
+    const texts = await this.page.locator('.cart_item .inventory_item_price').allTextContents();
+    return texts.map((t) => parseFloat(t.replace('$', '')));
+  }
+
+  async getItemPriceByName(name: string): Promise<number> {
+    const item = this.cartItems.filter({ hasText: name });
+    const text = await item.locator('.inventory_item_price').textContent();
+    return parseFloat((text ?? '').replace('$', ''));
+  }
 }

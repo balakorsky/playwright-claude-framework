@@ -80,4 +80,21 @@ export class CheckoutPage {
   async expectOrderConfirmed() {
     await expect(this.confirmationHeader).toHaveText('Thank you for your order!');
   }
+
+  private async parseAmount(locator: Locator): Promise<number> {
+    const text = (await locator.textContent()) ?? '';
+    return parseFloat(text.replace(/[^0-9.]/g, ''));
+  }
+
+  async getSubtotalAmount(): Promise<number> {
+    return this.parseAmount(this.itemTotal);
+  }
+
+  async getTaxAmount(): Promise<number> {
+    return this.parseAmount(this.tax);
+  }
+
+  async getTotalAmount(): Promise<number> {
+    return this.parseAmount(this.total);
+  }
 }

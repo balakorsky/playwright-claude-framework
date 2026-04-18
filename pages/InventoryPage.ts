@@ -66,6 +66,25 @@ export class InventoryPage {
     await expect(this.page).toHaveURL(/cart/);
   }
 
+  async getItemCount(): Promise<number> {
+    return this.inventoryItems.count();
+  }
+
+  async getItemNames(): Promise<string[]> {
+    return this.page.locator('.inventory_item_name').allTextContents();
+  }
+
+  async getItemPriceByName(name: string): Promise<number> {
+    const item = this.inventoryItems.filter({ hasText: name });
+    const text = await item.locator('.inventory_item_price').textContent();
+    return parseFloat((text ?? '').replace('$', ''));
+  }
+
+  async getItemImageSrcByName(name: string): Promise<string> {
+    const item = this.inventoryItems.filter({ hasText: name });
+    return (await item.locator('img').getAttribute('src')) ?? '';
+  }
+
   async logout() {
     await this.burgerMenuButton.click();
     await this.logoutLink.waitFor({ state: 'visible' });
