@@ -19,5 +19,29 @@
       "Edit",
       "Write"
     ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "BRANCH=$(git branch --show-current 2>/dev/null || echo 'unknown'); COMMIT=$(git log --oneline -1 2>/dev/null | cut -c1-72 || echo 'no commits'); CHANGED=$(git status --short 2>/dev/null | wc -l | tr -d ' '); printf '{\"systemMessage\": \"Ветка: %s | %s | Незакоммичено: %s файл(ов)\"}' \"$BRANCH\" \"$COMMIT\" \"$CHANGED\"",
+            "statusMessage": "Загрузка состояния проекта..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CHANGED=$(git status --short 2>/dev/null | wc -l | tr -d ' '); [ \"$CHANGED\" -gt 0 ] && printf '{\"systemMessage\": \"⚠ Незакоммичено: %s файл(ов) — не забудь закоммитить перед выходом.\"}' \"$CHANGED\" || true",
+            "statusMessage": "Проверка git..."
+          }
+        ]
+      }
+    ]
   }
 }
