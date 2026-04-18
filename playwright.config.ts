@@ -58,5 +58,12 @@ export default defineConfig({
       testDir: './tests/a11y',
       use: { ...devices['Desktop Chrome'] },
     },
+
+    // Health checks — chromium only
+    {
+      name: 'health',
+      testDir: './tests/health',
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 });

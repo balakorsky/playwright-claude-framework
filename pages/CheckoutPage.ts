@@ -15,6 +15,8 @@ export class CheckoutPage {
   readonly finishButton: Locator;
   // Confirmation
   readonly confirmationHeader: Locator;
+  readonly completionText: Locator;
+  readonly backHomeButton: Locator;
   // Validation
   readonly errorMessage: Locator;
   readonly cancelButton: Locator;
@@ -31,6 +33,8 @@ export class CheckoutPage {
     this.total = page.locator('.summary_total_label');
     this.finishButton = page.locator('[data-test="finish"]');
     this.confirmationHeader = page.locator('[data-test="complete-header"]');
+    this.completionText = page.locator('[data-test="complete-text"]');
+    this.backHomeButton = page.locator('[data-test="back-to-products"]');
     this.errorMessage = page.locator('[data-test="error"]');
     this.cancelButton = page.locator('[data-test="cancel"]');
   }
@@ -75,6 +79,55 @@ export class CheckoutPage {
   async finish() {
     await this.finishButton.click();
     await expect(this.page).toHaveURL(/checkout-complete/);
+  }
+
+  async expectOnStepOne() {
+    await expect(this.page).toHaveURL(/checkout-step-one/);
+    await expect(this.continueButton).toBeVisible();
+  }
+
+  async expectOnStepTwo() {
+    await expect(this.page).toHaveURL(/checkout-step-two/);
+    await expect(this.finishButton).toBeVisible();
+  }
+
+  async expectOnComplete() {
+    await expect(this.page).toHaveURL(/checkout-complete/);
+    await expect(this.confirmationHeader).toBeVisible();
+  }
+
+  async expectSummaryVisible() {
+    await expect(this.summaryItems.first()).toBeVisible();
+  }
+
+  async expectSummaryEmpty() {
+    await expect(this.summaryItems).toHaveCount(0);
+  }
+
+  async expectFinishButtonVisible() {
+    await expect(this.finishButton).toBeVisible();
+  }
+
+  async expectErrorNotVisible() {
+    await expect(this.errorMessage).not.toBeVisible();
+  }
+
+  async expectRedirectedToLogin() {
+    await expect(this.page).toHaveURL('https://www.saucedemo.com/');
+    await expect(this.page.locator('#login-button')).toBeVisible();
+  }
+
+  async clickBackHome() {
+    await this.backHomeButton.click();
+    await expect(this.page).toHaveURL(/inventory/);
+  }
+
+  async getFieldValues(): Promise<{ firstName: string; lastName: string; postalCode: string }> {
+    return {
+      firstName: await this.firstNameInput.inputValue(),
+      lastName: await this.lastNameInput.inputValue(),
+      postalCode: await this.postalCodeInput.inputValue(),
+    };
   }
 
   async expectOrderConfirmed() {

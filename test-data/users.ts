@@ -3,6 +3,10 @@ export const users = {
     username: 'standard_user',
     password: 'secret_sauce',
   },
+  problem: {
+    username: 'problem_user',
+    password: 'secret_sauce',
+  },
   performanceGlitch: {
     username: 'performance_glitch_user',
     password: 'secret_sauce',
